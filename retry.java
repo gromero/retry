@@ -4,38 +4,37 @@ import jdk.internal.misc.Unsafe;
 
 
 
-class x { 
+class RTM {
   private static final Unsafe UNSAFE = Unsafe.getUnsafe();
   protected final Object monitor = new Object();
   WhiteBox wb;
   Thread thread0;
   Thread thread1; // conflicting thread
-  Runnable work0; 
+  Runnable work0;
   Runnable work1; // conflicting task
-  CyclicBarrier barrier; 
+  CyclicBarrier barrier;
   private static int sharedVariable = 0;
 
 
   void isMonitorInflated() {
     wb = WhiteBox.getWhiteBox();
     System.out.println("Is monitor inflated? " + (wb.isMonitorInflated(this.monitor) ? "Yes" : "No"));
-  } 
+  }
 
-  void inflateMonitor() throws Exception { 
+  void inflateMonitor() throws Exception {
    barrier = new CyclicBarrier(2);
 
    work0 = () -> {
       synchronized (monitor) {
       try {
-         barrier.await(); 
+         barrier.await();
       } catch (Exception e) {
         System.out.println("0");
 
       }
-  
+
 
       try {
-          // wait until primordial thread dies
         monitor.wait();
       } catch (Exception e) {
         System.out.println("2");
@@ -45,7 +44,7 @@ class x {
 
     };
 
-    
+
     System.out.println("Creating thread0...");
 
     thread0 = new Thread(work0);
@@ -72,7 +71,7 @@ class x {
               Thread.sleep(1000); // 1s
           }
       } catch (Exception e) {
-          System.out.println("fail #100");  
+          System.out.println("fail #100");
       }
   };
 
@@ -91,7 +90,7 @@ class x {
       try {
           barrier.await();
       } catch (Exception e) {
-          System.out.println("fail #101");    
+          System.out.println("fail #101")
       }
       synchronized (monitor) {
           sharedVariable++;
@@ -103,12 +102,12 @@ class x {
 class retry  {
   public static void main(String[] args) throws Exception {
 
-  
-   x a = new x(); 
-   a.inflateMonitor();
-   a.isMonitorInflated();
-   a.causeConflict();
-   
+
+   RTM rtm = new RTM();
+   rtm.inflateMonitor();
+   rtm.isMonitorInflated();
+   rtm.causeConflict();
+
   }
 
 }

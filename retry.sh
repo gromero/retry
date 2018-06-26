@@ -40,7 +40,7 @@ $JAVA \
    -XX:-UseRTMXendForLockBusy \
    -XX:RTMTotalCountIncrRate=1 \
    -XX:RTMRetryCount=$2 \
-   -XX:CompileOnly=x.transactionalRegion,x.syncAndTest,x.test \
+   -XX:CompileOnly=RTM.syncAndTest \
    --add-exports java.base/jdk.internal.misc=ALL-UNNAMED \
    retry
 
