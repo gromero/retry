@@ -90,7 +90,7 @@ class RTM {
       try {
           barrier.await();
       } catch (Exception e) {
-          System.out.println("fail #101")
+          System.out.println("fail #101");
       }
       synchronized (monitor) {
           sharedVariable++;
