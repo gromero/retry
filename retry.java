@@ -21,6 +21,8 @@ class RTM {
     System.out.println("Is monitor inflated? " + (wb.isMonitorInflated(this.monitor) ? "Yes" : "No"));
   }
 
+  /* inflateMonitor() */
+
   void inflateMonitor() throws Exception {
    barrier = new CyclicBarrier(2);
 
@@ -33,7 +35,6 @@ class RTM {
 
       }
 
-
       try {
         monitor.wait();
       } catch (Exception e) {
@@ -45,24 +46,26 @@ class RTM {
     };
 
 
-    System.out.println("Creating thread0...");
+   System.out.println("Creating thread0...");
 
-    thread0 = new Thread(work0);
-    thread0.setDaemon(true);
-    thread0.start();
+   thread0 = new Thread(work0);
+   thread0.setDaemon(true);
+   thread0.start();
 
 
-  barrier.await();
+   barrier.await();
 
     System.out.println("Trying to inflate lock...");
     synchronized (monitor) {
        sharedVariable++;
-       }
     }
+   }
 
 
+   /* causeConflict() */
 
    void causeConflict() throws Exception {
+
    work1 = () -> {
       try {
           System.out.println("Entering thread to sleep...");
@@ -77,10 +80,11 @@ class RTM {
 
   thread1 = new Thread(work1);
 
-  // Grab lock and don't release before 5s
+  // On another thread grab lock and don't release before 1s.
   thread1.start();
 
-  // Try to grab the lock from another thread
+  // Then try to grab the lock from this thread while the
+  // other thread holds the lock.
   syncAndTest();
 
   thread1.join();
@@ -95,10 +99,11 @@ class RTM {
       synchronized (monitor) {
           sharedVariable++;
       }
+
   }
 
+} // RTM class
 
-}
 class retry  {
   public static void main(String[] args) throws Exception {
 
